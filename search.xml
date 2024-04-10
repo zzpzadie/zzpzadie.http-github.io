@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
+<search>
+
+
+
+    <entry>
+      <title>1.CSS的创建</title>
+      <link href="/2024/04/10/css%E5%AD%A6%E4%B9%A0/"/>
+      <url>/2024/04/10/css%E5%AD%A6%E4%B9%A0/</url>
+
+        <content type="html"><![CDATA[]]></content>
+
+
+      <categories>
+
+          <category> css学习 </category>
+
+      </categories>
+
+
+    </entry>
+
+
+
     <entry>
       <title>博客说明</title>
       <link href="/2024/03/30/%E5%8D%9A%E5%AE%A2%E8%AF%B4%E6%98%8E/%E5%8D%9A%E5%AE%A2%E8%AF%B4%E6%98%8E/"/>
       <url>/2024/03/30/%E5%8D%9A%E5%AE%A2%E8%AF%B4%E6%98%8E/%E5%8D%9A%E5%AE%A2%E8%AF%B4%E6%98%8E/</url>
-      
-        <content type="html"><![CDATA[<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">a</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;hello,world&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><p><img src="/./image/haibiantian.jpg" alt="沙滩"></p><h2 id="二级标题vue2"><a href="#二级标题vue2" class="headerlink" title="二级标题vue2"></a>二级标题vue2</h2><p>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>guioh</p><h3 id="三级标题vue3"><a href="#三级标题vue3" class="headerlink" title="三级标题vue3"></a>三级标题vue3</h3><p>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh<br>私人海滩和肉体和gfhdhhhhhhhhhhhh</p>]]></content>
-      
-      
-      
+
+        <content type="html"><![CDATA[<h2 id="本博客只是作者为了记录作者学习中遇到的一些当时不能解决的问题方案，"><a href="#本博客只是作者为了记录作者学习中遇到的一些当时不能解决的问题方案，" class="headerlink" title="本博客只是作者为了记录作者学习中遇到的一些当时不能解决的问题方案，"></a>本博客只是作者为了记录作者学习中遇到的一些当时不能解决的问题方案，</h2><h2 id="或者在此之前没有遇到的技术，将持续更新"><a href="#或者在此之前没有遇到的技术，将持续更新" class="headerlink" title="或者在此之前没有遇到的技术，将持续更新"></a>或者在此之前没有遇到的技术，将持续更新</h2><h3 id="导航栏-搜索：可以搜索文章相关字眼"><a href="#导航栏-搜索：可以搜索文章相关字眼" class="headerlink" title="导航栏-搜索：可以搜索文章相关字眼"></a>导航栏-搜索：可以搜索文章相关字眼</h3><h3 id="导航栏-总览：所有文章"><a href="#导航栏-总览：所有文章" class="headerlink" title="导航栏-总览：所有文章"></a>导航栏-总览：所有文章</h3><h3 id="导航栏-分类：还比较傻瓜，可以看侧边栏"><a href="#导航栏-分类：还比较傻瓜，可以看侧边栏" class="headerlink" title="导航栏-分类：还比较傻瓜，可以看侧边栏"></a>导航栏-分类：还比较傻瓜，可以看侧边栏</h3><h3 id="导航栏-友情链接：不重要"><a href="#导航栏-友情链接：不重要" class="headerlink" title="导航栏-友情链接：不重要"></a>导航栏-友情链接：不重要</h3><p><img src="/./image/haibiantian.jpg" alt="沙滩"></p>]]></content>
+
+
+
     </entry>
-    
-    
-    
+
+
+
     <entry>
       <title>Hello World</title>
       <link href="/2024/03/27/hello-world/"/>
       <url>/2024/03/27/hello-world/</url>
-      
+
         <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
-      
-      
-      
+
+
+
     </entry>
-    
-    
-  
-  
+
+
+
+
 </search>

@@ -1,5 +1,5 @@
 ---
-title: '如何为GitHub上的项目生成一个可访问的网站'
+title: '3.如何为GitHub上的项目生成一个可访问的网站'
 date: '2024-4-11 11:31:00'
 description: '如何为GitHub上的项目生成一个可访问的网站'
 cover: "./image/haibiantian.jpg"

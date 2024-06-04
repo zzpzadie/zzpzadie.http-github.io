@@ -1,1647 +1,1642 @@
-[//]: # (---)
+---
+title: '2.Echart画任意条数折线图，可添加视图'
+date: '2024-5-10 9:57:00'
+description: 'Echart画任意条数折线图，可添加视图'
+cover: "./image/haibiantian.jpg"
+published: false
+categories:               
+    - Echart
 
-[//]: # (title: '2.Echart画任意条数折线图，可添加视图')
+---
 
-[//]: # (date: '2024-5-10 9:57:00')
+# 
 
-[//]: # (description: 'Echart画任意条数折线图，可添加视图')
+```bash
 
-[//]: # (cover: "./image/haibiantian.jpg")
+<template>
 
-[//]: # (categories:               )
+  <div class="tc-container">
 
-[//]: # (    - Echart)
+    <el-form
 
-[//]: # (---)
+        :model="queryParams"
 
-[//]: # (# )
+        ref="queryRef"
 
-[//]: # (```bash)
+        :inline="true"
 
-[//]: # (<template>)
+        class="content-header-form"
 
-[//]: # (  <div class="tc-container">)
+        @submit.native.prevent
 
-[//]: # (    <el-form)
+    >
 
-[//]: # (        :model="queryParams")
+      <el-form-item label="" prop="" class="search">
 
-[//]: # (        ref="queryRef")
+        <tableselect
 
-[//]: # (        :inline="true")
 
-[//]: # (        class="content-header-form")
+            ref="tableselectRef"
 
-[//]: # (        @submit.native.prevent)
+            :parentoptions="searchList"
 
-[//]: # (    >)
+            @handleSearch="handleQuery"
 
-[//]: # (      <el-form-item label="" prop="" class="search">)
+            @resetQuery="resetQuery"
 
-[//]: # (        <tableselect)
+            :dateTime="true"
 
-[//]: # ()
-[//]: # (            ref="tableselectRef")
+        ></tableselect>
 
-[//]: # (            :parentoptions="searchList")
+      </el-form-item>
 
-[//]: # (            @handleSearch="handleQuery")
+      <el-form-item class="button-item">
 
-[//]: # (            @resetQuery="resetQuery")
+        <el-button
 
-[//]: # (            :dateTime="true")
+            type="primary"
 
-[//]: # (        ></tableselect>)
+            icon="Download"
 
-[//]: # (      </el-form-item>)
+            @click="handleDownload"
 
-[//]: # (      <el-form-item class="button-item">)
+        >下载
 
-[//]: # (        <el-button)
+        </el-button>
 
-[//]: # (            type="primary")
+      </el-form-item>
 
-[//]: # (            icon="Download")
+      <el-form-item v-if="!chartview" class="button-item">
 
-[//]: # (            @click="handleDownload")
+        <el-button
 
-[//]: # (        >下载)
+            type="primary"
 
-[//]: # (        </el-button>)
+            @click="handlechart"
 
-[//]: # (      </el-form-item>)
+        ><el-icon><TrendCharts /></el-icon>视图
 
-[//]: # (      <el-form-item v-if="!chartview" class="button-item">)
+        </el-button>
 
-[//]: # (        <el-button)
+      </el-form-item>
 
-[//]: # (            type="primary")
+      <el-form-item v-if="chartview" class="button-item">
 
-[//]: # (            @click="handlechart")
+        <el-button
 
-[//]: # (        ><el-icon><TrendCharts /></el-icon>视图)
+            type="primary"
 
-[//]: # (        </el-button>)
+            @click="handletable"
 
-[//]: # (      </el-form-item>)
+        >列表
 
-[//]: # (      <el-form-item v-if="chartview" class="button-item">)
+        </el-button>
 
-[//]: # (        <el-button)
+      </el-form-item>
 
-[//]: # (            type="primary")
+      <el-form-item v-if="chartview" class="button-item">
 
-[//]: # (            @click="handletable")
+        <el-button
 
-[//]: # (        >列表)
+            type="primary"
 
-[//]: # (        </el-button>)
+            @click="chartadd"
 
-[//]: # (      </el-form-item>)
+        >添加视图
 
-[//]: # (      <el-form-item v-if="chartview" class="button-item">)
+        </el-button>
 
-[//]: # (        <el-button)
+      </el-form-item>
 
-[//]: # (            type="primary")
+    </el-form>
 
-[//]: # (            @click="chartadd")
+    <el-table v-if="!chartview" v-loading="loading"
 
-[//]: # (        >添加视图)
+              :data="tableData">
 
-[//]: # (        </el-button>)
+      <el-table-column
 
-[//]: # (      </el-form-item>)
+          label="参数名称"
 
-[//]: # (    </el-form>)
+          align="center"
 
-[//]: # (    <el-table v-if="!chartview" v-loading="loading")
+          prop="name"
 
-[//]: # (              :data="tableData">)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="参数名称")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="参数代号"
 
-[//]: # (          prop="name")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="code"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="参数代号")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="设备标识"
 
-[//]: # (          prop="code")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="stationSymbol"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="设备标识")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="告警级别"
 
-[//]: # (          prop="stationSymbol")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="alarmLevel"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="告警级别")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="解析时间"
 
-[//]: # (          prop="alarmLevel")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="createTime"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="解析时间")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="星上时间(UTC)"
 
-[//]: # (          prop="createTime")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="satelliteTime"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="星上时间&#40;UTC&#41;")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="数据采样时间"
 
-[//]: # (          prop="satelliteTime")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="stationTime"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      />
 
-[//]: # (          label="数据采样时间")
+      <el-table-column
 
-[//]: # (          align="center")
+          label="源码"
 
-[//]: # (          prop="stationTime")
+          align="center"
 
-[//]: # (          :show-overflow-tooltip="true")
+          prop="aryValue"
 
-[//]: # (      />)
+          :show-overflow-tooltip="true"
 
-[//]: # (      <el-table-column)
+      >
 
-[//]: # (          label="源码")
 
-[//]: # (          align="center")
+        <template #header>
 
-[//]: # (          prop="aryValue")
+          <div class="slotBox">
 
-[//]: # (          :show-overflow-tooltip="true")
+            <span>源码</span>
 
-[//]: # (      >)
+            <el-select
 
-[//]: # ()
-[//]: # (        <template #header>)
+                v-model="search"
 
-[//]: # (          <div class="slotBox">)
+                class="m-2"
 
-[//]: # (            <span>源码</span>)
+                placeholder="Select"
 
-[//]: # (            <el-select)
+                size="small"
 
-[//]: # (                v-model="search")
+                @change="selectVal"
 
-[//]: # (                class="m-2")
+                style="width: 80px; margin-left: 0.1rem"
 
-[//]: # (                placeholder="Select")
+            >
 
-[//]: # (                size="small")
+              <el-option
 
-[//]: # (                @change="selectVal")
+                  v-for="item in scaleOptions"
 
-[//]: # (                style="width: 80px; margin-left: 0.1rem")
+                  :key="item.value"
 
-[//]: # (            >)
+                  :label="item.label"
 
-[//]: # (              <el-option)
+                  :value="item.value"
 
-[//]: # (                  v-for="item in scaleOptions")
+              />
 
-[//]: # (                  :key="item.value")
+            </el-select>
 
-[//]: # (                  :label="item.label")
+          </div>
 
-[//]: # (                  :value="item.value")
+        </template>
 
-[//]: # (              />)
+      </el-table-column>
 
-[//]: # (            </el-select>)
+      <el-table-column
 
-[//]: # (          </div>)
+          label="解析值"
 
-[//]: # (        </template>)
+          align="center"
 
-[//]: # (      </el-table-column>)
+          prop="value"
 
-[//]: # (      <el-table-column)
+          :show-overflow-tooltip="true"
 
-[//]: # (          label="解析值")
+      />
 
-[//]: # (          align="center")
+    </el-table>
 
-[//]: # (          prop="value")
+      <div v-if="chartview" v-for="(item,index) in chartList" :key="index+1" class="chart-container" style="width: 100%; height: 100%">
 
-[//]: # (          :show-overflow-tooltip="true")
+        <div class="right_chart" :id="'lineRef'+item.chartid" style="width: 100%;height: 100%"></div>
 
-[//]: # (      />)
+      <!--      <div class="right_chart" id="chartTwo" style="width: 50%;height:300px"></div>-->
 
-[//]: # (    </el-table>)
+      <!--      <div class="selected-one" style="width: 50%;height:50px">-->
 
-[//]: # (      <div v-if="chartview" v-for="&#40;item,index&#41; in chartList" :key="index+1" class="chart-container" style="width: 100%; height: 100%">)
+      <!--        <el-select-->
 
-[//]: # (        <div class="right_chart" :id="'lineRef'+item.chartid" style="width: 100%;height: 100%"></div>)
+      <!--            v-model="paramId"-->
 
-[//]: # (      <!--      <div class="right_chart" id="chartTwo" style="width: 50%;height:300px"></div>-->)
+      <!--            placeholder="请选择参数"-->
 
-[//]: # (      <!--      <div class="selected-one" style="width: 50%;height:50px">-->)
+      <!--            @change="changeparam"-->
 
-[//]: # (      <!--        <el-select-->)
+      <!--        >-->
 
-[//]: # (      <!--            v-model="paramId"-->)
+      <!--          <el-option value>请选择</el-option>-->
 
-[//]: # (      <!--            placeholder="请选择参数"-->)
+      <!--          <el-option key="1" label="是" value="1"/>-->
 
-[//]: # (      <!--            @change="changeparam"-->)
+      <!--          <el-option key="0" label="否" value="0"/>-->
 
-[//]: # (      <!--        >-->)
+      <!--&lt;!&ndash;          <el-option&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option value>请选择</el-option>-->)
+      <!--&lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="1" label="是" value="1"/>-->)
+      <!--&lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="0" label="否" value="0"/>-->)
+      <!--&lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->
 
-[//]: # (      <!--&lt;!&ndash;          <el-option&ndash;&gt;-->)
+      <!--&lt;!&ndash;              :value="item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--&lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->)
+      <!--&lt;!&ndash;          ></el-option>&ndash;&gt;-->
 
-[//]: # (      <!--&lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->)
+      <!--        </el-select>-->
 
-[//]: # (      <!--&lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->)
+      <!--      </div>-->
 
-[//]: # (      <!--&lt;!&ndash;              :value="item.compId"&ndash;&gt;-->)
+      <!--      <div class="selected-one" style="width: 50%;height:50px">-->
 
-[//]: # (      <!--&lt;!&ndash;          ></el-option>&ndash;&gt;-->)
+      <!--        <el-select-->
 
-[//]: # (      <!--        </el-select>-->)
+      <!--            v-model="paramId"-->
 
-[//]: # (      <!--      </div>-->)
+      <!--            placeholder="请选择企业空间"-->
 
-[//]: # (      <!--      <div class="selected-one" style="width: 50%;height:50px">-->)
+      <!--            @change="changeparam"-->
 
-[//]: # (      <!--        <el-select-->)
+      <!--        >-->
 
-[//]: # (      <!--            v-model="paramId"-->)
+      <!--          <el-option value>请选择</el-option>-->
 
-[//]: # (      <!--            placeholder="请选择企业空间"-->)
+      <!--          <el-option key="1" label="是" value="1"/>-->
 
-[//]: # (      <!--            @change="changeparam"-->)
+      <!--          <el-option key="0" label="否" value="0"/>-->
 
-[//]: # (      <!--        >-->)
+      <!--          &lt;!&ndash;          <el-option&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option value>请选择</el-option>-->)
+      <!--          &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="1" label="是" value="1"/>-->)
+      <!--          &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="0" label="否" value="0"/>-->)
+      <!--          &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;          <el-option&ndash;&gt;-->)
+      <!--          &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->)
+      <!--          &lt;!&ndash;          ></el-option>&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->)
+      <!--        </el-select>-->
 
-[//]: # (      <!--          &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->)
+      <!--      </div>-->
 
-[//]: # (      <!--          &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->)
+      <!--      <div class="right_chart" id="chartThree" style="width: 50%;height:300px"></div>-->
 
-[//]: # (      <!--          &lt;!&ndash;          ></el-option>&ndash;&gt;-->)
+      <!--      <div class="right_chart" id="chartFour" style="width: 50%;height:300px"></div>-->
 
-[//]: # (      <!--        </el-select>-->)
+      <!--      <div class="selected-one" style="width: 50%;height:50px">-->
 
-[//]: # (      <!--      </div>-->)
+      <!--        <el-select-->
 
-[//]: # (      <!--      <div class="right_chart" id="chartThree" style="width: 50%;height:300px"></div>-->)
+      <!--            v-model="paramId"-->
 
-[//]: # (      <!--      <div class="right_chart" id="chartFour" style="width: 50%;height:300px"></div>-->)
+      <!--            placeholder="请选择企业空间"-->
 
-[//]: # (      <!--      <div class="selected-one" style="width: 50%;height:50px">-->)
+      <!--            @change="changeparam"-->
 
-[//]: # (      <!--        <el-select-->)
+      <!--        >-->
 
-[//]: # (      <!--            v-model="paramId"-->)
+      <!--          <el-option value>请选择</el-option>-->
 
-[//]: # (      <!--            placeholder="请选择企业空间"-->)
+      <!--          <el-option key="1" label="是" value="1"/>-->
 
-[//]: # (      <!--            @change="changeparam"-->)
+      <!--          <el-option key="0" label="否" value="0"/>-->
 
-[//]: # (      <!--        >-->)
+      <!--          &lt;!&ndash;          <el-option&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option value>请选择</el-option>-->)
+      <!--          &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="1" label="是" value="1"/>-->)
+      <!--          &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--          <el-option key="0" label="否" value="0"/>-->)
+      <!--          &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;          <el-option&ndash;&gt;-->)
+      <!--          &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->)
+      <!--          &lt;!&ndash;          ></el-option>&ndash;&gt;-->
 
-[//]: # (      <!--          &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->)
+      <!--        </el-select>-->
 
-[//]: # (      <!--          &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->)
+      <!--      </div>-->
 
-[//]: # (      <!--          &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->)
+      <!--      <div class="selected-one" style="width: 50%;height:50px">-->
 
-[//]: # (      <!--          &lt;!&ndash;          ></el-option>&ndash;&gt;-->)
+      <!--        <el-select-->
 
-[//]: # (      <!--        </el-select>-->)
+      <!--          v-model="paramId"-->
 
-[//]: # (      <!--      </div>-->)
+      <!--          placeholder="请选择企业空间"-->
 
-[//]: # (      <!--      <div class="selected-one" style="width: 50%;height:50px">-->)
+      <!--          @change="changeparam"-->
 
-[//]: # (      <!--        <el-select-->)
+      <!--      >-->
 
-[//]: # (      <!--          v-model="paramId"-->)
+      <!--        <el-option value>请选择</el-option>-->
 
-[//]: # (      <!--          placeholder="请选择企业空间"-->)
+      <!--        <el-option key="1" label="是" value="1"/>-->
 
-[//]: # (      <!--          @change="changeparam"-->)
+      <!--        <el-option key="0" label="否" value="0"/>-->
 
-[//]: # (      <!--      >-->)
+      <!--        &lt;!&ndash;          <el-option&ndash;&gt;-->
 
-[//]: # (      <!--        <el-option value>请选择</el-option>-->)
+      <!--        &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->
 
-[//]: # (      <!--        <el-option key="1" label="是" value="1"/>-->)
+      <!--        &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--        <el-option key="0" label="否" value="0"/>-->)
+      <!--        &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->
 
-[//]: # (      <!--        &lt;!&ndash;          <el-option&ndash;&gt;-->)
+      <!--        &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->
 
-[//]: # (      <!--        &lt;!&ndash;              v-for="item in enterpriseList"&ndash;&gt;-->)
+      <!--        &lt;!&ndash;          ></el-option>&ndash;&gt;-->
 
-[//]: # (      <!--        &lt;!&ndash;              :key="'enterprise' + item.compId"&ndash;&gt;-->)
+      <!--      </el-select>-->
 
-[//]: # (      <!--        &lt;!&ndash;              :label="item.companyName"&ndash;&gt;-->)
+      <!--      </div>-->
 
-[//]: # (      <!--        &lt;!&ndash;              :value="item.compId"&ndash;&gt;-->)
+    </div>
 
-[//]: # (      <!--        &lt;!&ndash;          ></el-option>&ndash;&gt;-->)
+    <pagination
 
-[//]: # (      <!--      </el-select>-->)
+        v-show="total > 0 && !chartview"
 
-[//]: # (      <!--      </div>-->)
+        :total="total"
 
-[//]: # (    </div>)
+        v-model:page="queryParams.pageNum"
 
-[//]: # (    <pagination)
+        v-model:limit="queryParams.pageSize"
 
-[//]: # (        v-show="total > 0 && !chartview")
+        @pagination="getTrList"
 
-[//]: # (        :total="total")
+    />
 
-[//]: # (        v-model:page="queryParams.pageNum")
+    <copyrightbottom v-if="!chartview"/>
 
-[//]: # (        v-model:limit="queryParams.pageSize")
+  </div>
 
-[//]: # (        @pagination="getTrList")
+</template>
 
-[//]: # (    />)
+<script setup>
 
-[//]: # (    <copyrightbottom v-if="!chartview"/>)
+import Sortable from "sortablejs";
 
-[//]: # (  </div>)
+import * as API from "@/api/telemetering/tm_api.js";
 
-[//]: # (</template>)
+import {nextTick, onMounted, reactive, ref, watch} from "vue";
 
-[//]: # (<script setup>)
+import qs from "qs";
 
-[//]: # (import Sortable from "sortablejs";)
+import usePermissionStore from "@/store/modules/permission";
 
-[//]: # (import * as API from "@/api/telemetering/tm_api.js";)
+import tableselect from "@/components/system/table-select.vue";
 
-[//]: # (import {nextTick, onMounted, reactive, ref, watch} from "vue";)
+import {getStationList} from "@/api/telestation/api";
 
-[//]: # (import qs from "qs";)
+import Copyrightbottom from "@/components/copyrightbottom/index.vue";
 
-[//]: # (import usePermissionStore from "@/store/modules/permission";)
+import * as echarts from "echarts";
 
-[//]: # (import tableselect from "@/components/system/table-select.vue";)
+import Pagination from "@/components/Pagination/index.vue";
 
-[//]: # (import {getStationList} from "@/api/telestation/api";)
+import edit from "@/views/satellite/telemetering/TelemetryAnalysis/edit.vue";
 
-[//]: # (import Copyrightbottom from "@/components/copyrightbottom/index.vue";)
+import {cloneDeepAndFormat} from "@/packages/utils";
 
-[//]: # (import * as echarts from "echarts";)
+import {set} from "xe-utils";
 
-[//]: # (import Pagination from "@/components/Pagination/index.vue";)
+const chartview = ref(false)
 
-[//]: # (import edit from "@/views/satellite/telemetering/TelemetryAnalysis/edit.vue";)
+const router = useRouter();
 
-[//]: # (import {cloneDeepAndFormat} from "@/packages/utils";)
+const total = ref(0);
 
-[//]: # (import {set} from "xe-utils";)
+const routeParams = ref([])
 
-[//]: # (const chartview = ref&#40;false&#41;)
+const optionOne = ref({
 
-[//]: # (const router = useRouter&#40;&#41;;)
+  title: {
 
-[//]: # (const total = ref&#40;0&#41;;)
+    text: '遥测结果'
 
-[//]: # (const routeParams = ref&#40;[]&#41;)
+  },
 
-[//]: # (const optionOne = ref&#40;{)
+  legend: {
 
-[//]: # (  title: {)
+    data:[]
 
-[//]: # (    text: '遥测结果')
+  },
 
-[//]: # (  },)
+  tooltip: {
 
-[//]: # (  legend: {)
+    trigger: 'axis',
 
-[//]: # (    data:[])
+  },
 
-[//]: # (  },)
+  xAxis: {
 
-[//]: # (  tooltip: {)
+    type: 'category' ,
 
-[//]: # (    trigger: 'axis',)
+    boundaryGap: false,
 
-[//]: # (  },)
+  },
 
-[//]: # (  xAxis: {)
+  yAxis: {
 
-[//]: # (    type: 'category' ,)
+    type: 'category'
 
-[//]: # (    boundaryGap: false,)
+  },
 
-[//]: # (  },)
+  dataZoom: {
 
-[//]: # (  yAxis: {)
+    show: true,
 
-[//]: # (    type: 'category')
+    start: 0,
 
-[//]: # (  },)
+    end: 100
 
-[//]: # (  dataZoom: {)
+  },
 
-[//]: # (    show: true,)
+  grid: { top: '15%' },
 
-[//]: # (    start: 0,)
+  series: [
 
-[//]: # (    end: 100)
+    {
 
-[//]: # (  },)
+      name: '',
 
-[//]: # (  grid: { top: '15%' },)
+      type: 'line',
 
-[//]: # (  series: [)
+      // smooth: true,
 
-[//]: # (    {)
+      // seriesLayoutBy: 'row',
 
-[//]: # (      name: '',)
+      // connectNulls:true,
 
-[//]: # (      type: 'line',)
+      // emphasis: { focus: 'series' },
 
-[//]: # (      // smooth: true,)
+      data: []
 
-[//]: # (      // seriesLayoutBy: 'row',)
+    },
 
-[//]: # (      // connectNulls:true,)
+    {
 
-[//]: # (      // emphasis: { focus: 'series' },)
+      name: '',
 
-[//]: # (      data: [])
+      type: 'line',
 
-[//]: # (    },)
+      // smooth: true,
 
-[//]: # (    {)
+      // seriesLayoutBy: 'row',
 
-[//]: # (      name: '',)
+      // connectNulls:true,
 
-[//]: # (      type: 'line',)
+      // emphasis: { focus: 'series' },
 
-[//]: # (      // smooth: true,)
+      data: []
 
-[//]: # (      // seriesLayoutBy: 'row',)
+    },
 
-[//]: # (      // connectNulls:true,)
+    {
 
-[//]: # (      // emphasis: { focus: 'series' },)
+      name: '',
 
-[//]: # (      data: [])
+      type: 'line',
 
-[//]: # (    },)
+      // smooth: true,
 
-[//]: # (    {)
+      // seriesLayoutBy: 'row',
 
-[//]: # (      name: '',)
+      // connectNulls:true,
 
-[//]: # (      type: 'line',)
+      // emphasis: { focus: 'series' },
 
-[//]: # (      // smooth: true,)
+      data: []
 
-[//]: # (      // seriesLayoutBy: 'row',)
+    },
 
-[//]: # (      // connectNulls:true,)
+    {
 
-[//]: # (      // emphasis: { focus: 'series' },)
+      name: '',
 
-[//]: # (      data: [])
+      type: 'line',
 
-[//]: # (    },)
+      // smooth: true,
 
-[//]: # (    {)
+      // seriesLayoutBy: 'row',
 
-[//]: # (      name: '',)
+      // connectNulls:true,
 
-[//]: # (      type: 'line',)
+      // emphasis: { focus: 'series' },
 
-[//]: # (      // smooth: true,)
+      data: []
 
-[//]: # (      // seriesLayoutBy: 'row',)
+    }
 
-[//]: # (      // connectNulls:true,)
+  ]
 
-[//]: # (      // emphasis: { focus: 'series' },)
+})
 
-[//]: # (      data: [])
+const arr1 = ref({
 
-[//]: # (    })
+  title: {
 
-[//]: # (  ])
+    text: '遥测结果'
 
-[//]: # (}&#41;)
+  },
 
-[//]: # (const arr1 = ref&#40;{)
+  legend: {
 
-[//]: # (  title: {)
+    data:[]
 
-[//]: # (    text: '遥测结果')
+  },
 
-[//]: # (  },)
+  tooltip: {
 
-[//]: # (  legend: {)
+    trigger: 'axis',
 
-[//]: # (    data:[])
+  },
 
-[//]: # (  },)
+  xAxis: {
 
-[//]: # (  tooltip: {)
+    type: 'category' ,
 
-[//]: # (    trigger: 'axis',)
+    boundaryGap: false,
 
-[//]: # (  },)
+  },
 
-[//]: # (  xAxis: {)
+  yAxis: {
 
-[//]: # (    type: 'category' ,)
+    type: 'category'
 
-[//]: # (    boundaryGap: false,)
+  },
 
-[//]: # (  },)
+  dataZoom: {
 
-[//]: # (  yAxis: {)
+    show: true,
 
-[//]: # (    type: 'category')
+    start: 0,
 
-[//]: # (  },)
+    end: 100
 
-[//]: # (  dataZoom: {)
+  },
 
-[//]: # (    show: true,)
+  grid: { top: '15%' },
 
-[//]: # (    start: 0,)
+  series: [
 
-[//]: # (    end: 100)
+    {
 
-[//]: # (  },)
+      name: '',
 
-[//]: # (  grid: { top: '15%' },)
+      type: 'line',
 
-[//]: # (  series: [)
+      // smooth: true,
 
-[//]: # (    {)
+      // seriesLayoutBy: 'row',
 
-[//]: # (      name: '',)
+      // connectNulls:true,
 
-[//]: # (      type: 'line',)
+      // emphasis: { focus: 'series' },
 
-[//]: # (      // smooth: true,)
+      data: []
 
-[//]: # (      // seriesLayoutBy: 'row',)
+    },
 
-[//]: # (      // connectNulls:true,)
+  ]
 
-[//]: # (      // emphasis: { focus: 'series' },)
+})
 
-[//]: # (      data: [])
+// let mychartOne = {}
 
-[//]: # (    },)
 
-[//]: # (  ])
+const permissionStore = usePermissionStore();
 
-[//]: # (}&#41;)
+const {proxy} = getCurrentInstance();
 
-[//]: # (// let mychartOne = {})
+const search = ref("2");
 
-[//]: # ()
-[//]: # (const permissionStore = usePermissionStore&#40;&#41;;)
+const tabNum = ref(0);
 
-[//]: # (const {proxy} = getCurrentInstance&#40;&#41;;)
+const scaleOptions = [
 
-[//]: # (const search = ref&#40;"2"&#41;;)
+  {
 
-[//]: # (const tabNum = ref&#40;0&#41;;)
+    value: "2",
 
-[//]: # (const scaleOptions = [)
+    label: "二进制",
 
-[//]: # (  {)
+  },
 
-[//]: # (    value: "2",)
+  {
 
-[//]: # (    label: "二进制",)
+    value: "10",
 
-[//]: # (  },)
+    label: "十进制",
 
-[//]: # (  {)
+  },
 
-[//]: # (    value: "10",)
+  {
 
-[//]: # (    label: "十进制",)
+    value: "16",
 
-[//]: # (  },)
+    label: "十六进制",
 
-[//]: # (  {)
+  },
 
-[//]: # (    value: "16",)
+];
 
-[//]: # (    label: "十六进制",)
 
-[//]: # (  },)
+const paramId = ref('')
 
-[//]: # (];)
+const loading = ref(false);
 
-[//]: # ()
-[//]: # (const paramId = ref&#40;''&#41;)
+const tableData = ref([])
 
-[//]: # (const loading = ref&#40;false&#41;;)
+const data = reactive({
 
-[//]: # (const tableData = ref&#40;[]&#41;)
+  queryParams: {
 
-[//]: # (const data = reactive&#40;{)
+    code: undefined,
 
-[//]: # (  queryParams: {)
+    date: undefined,
 
-[//]: # (    code: undefined,)
+    startTime: undefined,
 
-[//]: # (    date: undefined,)
+    endTime: undefined,
 
-[//]: # (    startTime: undefined,)
+    pageNum: 1,
 
-[//]: # (    endTime: undefined,)
+    pageSize: 10,
 
-[//]: # (    pageNum: 1,)
+  },
 
-[//]: # (    pageSize: 10,)
+  searchList: [
 
-[//]: # (  },)
+    {
 
-[//]: # (  searchList: [)
+      id: "1",
 
-[//]: # (    {)
+      value: "code",
 
-[//]: # (      id: "1",)
+      label: "参数代号",
 
-[//]: # (      value: "code",)
+      type: "select",
 
-[//]: # (      label: "参数代号",)
+      options: [],
 
-[//]: # (      type: "select",)
+    },
 
-[//]: # (      options: [],)
+    {
 
-[//]: # (    },)
+      id: "2",
 
-[//]: # (    {)
+      value: "name",
 
-[//]: # (      id: "2",)
+      label: "参数名称",
 
-[//]: # (      value: "name",)
+      type: "input",
 
-[//]: # (      label: "参数名称",)
+    },
 
-[//]: # (      type: "input",)
+    {
 
-[//]: # (    },)
+      id: "3",
 
-[//]: # (    {)
+      value: "date",
 
-[//]: # (      id: "3",)
+      label: "起止时间",
 
-[//]: # (      value: "date",)
+      type: "datepicker",
 
-[//]: # (      label: "起止时间",)
+    },
 
-[//]: # (      type: "datepicker",)
+    {
 
-[//]: # (    },)
+      id: "4",
 
-[//]: # (    {)
+      value: "delay",
 
-[//]: # (      id: "4",)
+      label: "遥测状态",
 
-[//]: # (      value: "delay",)
+      type: "select",
 
-[//]: # (      label: "遥测状态",)
+      options: [
 
-[//]: # (      type: "select",)
+        {
 
-[//]: # (      options: [)
+          label: "延迟遥测",
 
-[//]: # (        {)
+          value: "true",
 
-[//]: # (          label: "延迟遥测",)
+        },
 
-[//]: # (          value: "true",)
+        {
 
-[//]: # (        },)
+          label: "实时遥测",
 
-[//]: # (        {)
+          value: "false",
 
-[//]: # (          label: "实时遥测",)
+        },
 
-[//]: # (          value: "false",)
+      ],
 
-[//]: # (        },)
+    },
 
-[//]: # (      ],)
+    {
 
-[//]: # (    },)
+      id: "5",
 
-[//]: # (    {)
+      value: "stationSymbol",
 
-[//]: # (      id: "5",)
+      label: "设备",
 
-[//]: # (      value: "stationSymbol",)
+      type: "select",
 
-[//]: # (      label: "设备",)
+      options: [],
 
-[//]: # (      type: "select",)
+    },
 
-[//]: # (      options: [],)
+    {
 
-[//]: # (    },)
+      id: "6",
 
-[//]: # (    {)
+      value: "alarmLevel",
 
-[//]: # (      id: "6",)
+      label: "告警级别",
 
-[//]: # (      value: "alarmLevel",)
+      type: "select",
 
-[//]: # (      label: "告警级别",)
+      options: [
 
-[//]: # (      type: "select",)
+        {
 
-[//]: # (      options: [)
+          value: '0',
 
-[//]: # (        {)
+          label: '未告警'
 
-[//]: # (          value: '0',)
+        },
 
-[//]: # (          label: '未告警')
+        {
 
-[//]: # (        },)
+          value: '1',
 
-[//]: # (        {)
+          label: '一级告警'
 
-[//]: # (          value: '1',)
+        },
 
-[//]: # (          label: '一级告警')
+        {
 
-[//]: # (        },)
+          value: '2',
 
-[//]: # (        {)
+          label: '二级告警'
 
-[//]: # (          value: '2',)
+        },
 
-[//]: # (          label: '二级告警')
+        {
 
-[//]: # (        },)
+          value: '3',
 
-[//]: # (        {)
+          label: '三级告警'
 
-[//]: # (          value: '3',)
+        }
 
-[//]: # (          label: '三级告警')
+      ],
 
-[//]: # (        })
+    }
 
-[//]: # (      ],)
+  ],
 
-[//]: # (    })
+});
 
-[//]: # (  ],)
+let {queryParams, searchList,} = toRefs(data);
 
-[//]: # (}&#41;;)
+onMounted(() => {
 
-[//]: # (let {queryParams, searchList,} = toRefs&#40;data&#41;;)
+  getParamList();
 
-[//]: # (onMounted&#40;&#40;&#41; => {)
+  getTrList();
 
-[//]: # (  getParamList&#40;&#41;;)
+  // initSortable();
 
-[//]: # (  getTrList&#40;&#41;;)
+  getStationListuser()
 
-[//]: # (  // initSortable&#40;&#41;;)
+});
 
-[//]: # (  getStationListuser&#40;&#41;)
 
-[//]: # (}&#41;;)
+// 视图
 
-[//]: # ()
-[//]: # (// 视图)
+function handlechart() {
 
-[//]: # (function handlechart&#40;&#41; {)
+  chartview.value = true
 
-[//]: # (  chartview.value = true)
+  console.log('1111',chartview.value)
 
-[//]: # (  console.log&#40;'1111',chartview.value&#41;)
+  set(chartList,0,{chartid:'chartOne',arr:cloneDeepAndFormat(arr1.value)})
 
-[//]: # (  set&#40;chartList,0,{chartid:'chartOne',arr:cloneDeepAndFormat&#40;arr1.value&#41;}&#41;)
+  getTrList()
 
-[//]: # (  getTrList&#40;&#41;)
+}
 
-[//]: # (})
+const chartList = reactive([{
 
-[//]: # (const chartList = reactive&#40;[{)
+  chartid:'chartOne',
 
-[//]: # (  chartid:'chartOne',)
+  arr:[]
 
-[//]: # (  arr:[])
+}])
 
-[//]: # (}]&#41;)
+const lineList = ref([0])
 
-[//]: # (const lineList = ref&#40;[0]&#41;)
+const mychartlList = ref([])
 
-[//]: # (const mychartlList = ref&#40;[]&#41;)
+//添加视图
 
-[//]: # (//添加视图)
+function chartadd(){
 
-[//]: # (function chartadd&#40;&#41;{)
+  console.log('jiaijiajiai')
 
-[//]: # (  console.log&#40;'jiaijiajiai'&#41;)
+  chartnumber.value = chartnumber.value + 1
 
-[//]: # (  chartnumber.value = chartnumber.value + 1)
+  console.log('chartnumber.value-1]',chartnumber.value)
 
-[//]: # (  console.log&#40;'chartnumber.value-1]',chartnumber.value&#41;)
+  set(chartList,chartnumber.value-1,{chartid:Math.random(),arr:cloneDeepAndFormat(arr1.value)})
 
-[//]: # (  set&#40;chartList,chartnumber.value-1,{chartid:Math.random&#40;&#41;,arr:cloneDeepAndFormat&#40;arr1.value&#41;}&#41;)
+  console.log('chartList[chartnumber.value-1]',chartList)
 
-[//]: # (  console.log&#40;'chartList[chartnumber.value-1]',chartList&#41;)
+  lineChartOne()
 
-[//]: # (  lineChartOne&#40;&#41;)
+}
 
-[//]: # (})
+const chartnumber = ref(1);
 
-[//]: # (const chartnumber = ref&#40;1&#41;;)
+let arr2 = {};
 
-[//]: # (let arr2 = {};)
+let arr3 = {};
 
-[//]: # (let arr3 = {};)
+let arr4 = {};
 
-[//]: # (let arr4 = {};)
+function lineChartOne() {
 
-[//]: # (function lineChartOne&#40;&#41; {)
+  setTimeout(function () {
 
-[//]: # (  setTimeout&#40;function &#40;&#41; {)
+    if (chartnumber.value == 1){
 
-[//]: # (    if &#40;chartnumber.value == 1&#41;{)
+      // let mychartOne = {}
 
-[//]: # (      // let mychartOne = {})
+      if (lineList.value[chartnumber.value-1] == 1){
 
-[//]: # (      if &#40;lineList.value[chartnumber.value-1] == 1&#41;{)
+        mychartlList.value[0] = echarts.init(document.getElementById('lineRef'+'chartOne'))
 
-[//]: # (        mychartlList.value[0] = echarts.init&#40;document.getElementById&#40;'lineRef'+'chartOne'&#41;&#41;)
+      }
 
-[//]: # (      })
+      console.log('数组一',chartList[chartnumber.value-1].arr)
 
-[//]: # (      console.log&#40;'数组一',chartList[chartnumber.value-1].arr&#41;)
+      mychartlList.value[0].setOption(chartList[chartnumber.value-1].arr)
 
-[//]: # (      mychartlList.value[0].setOption&#40;chartList[chartnumber.value-1].arr&#41;)
+    }else {
 
-[//]: # (    }else {)
+      if (!lineList.value[chartnumber.value-1]){
 
-[//]: # (      if &#40;!lineList.value[chartnumber.value-1]&#41;{)
+        lineList.value[chartnumber.value-1]=0
 
-[//]: # (        lineList.value[chartnumber.value-1]=0)
+        mychartlList.value[chartnumber.value-1] = echarts.init(document.getElementById('lineRef'+chartList[chartnumber.value-1].chartid))
 
-[//]: # (        mychartlList.value[chartnumber.value-1] = echarts.init&#40;document.getElementById&#40;'lineRef'+chartList[chartnumber.value-1].chartid&#41;&#41;)
+        console.log('二初始化',mychartlList.value)
 
-[//]: # (        console.log&#40;'二初始化',mychartlList.value&#41;)
+      }
 
-[//]: # (      })
+      let abb=chartList[chartnumber.value-1].arr
 
-[//]: # (      let abb=chartList[chartnumber.value-1].arr)
+      console.log('数组二',abb)
 
-[//]: # (      console.log&#40;'数组二',abb&#41;)
+      mychartlList.value[chartnumber.value-1].setOption(abb,true)
 
-[//]: # (      mychartlList.value[chartnumber.value-1].setOption&#40;abb,true&#41;)
+    }
 
-[//]: # (    })
+  },1000)
 
-[//]: # (  },1000&#41;)
+}
 
-[//]: # (})
+function lineChartTwo() {
 
-[//]: # (function lineChartTwo&#40;&#41; {)
+  console.log('2222222')
 
-[//]: # (  console.log&#40;'2222222'&#41;)
+  setTimeout(function () {
 
-[//]: # (  setTimeout&#40;function &#40;&#41; {)
+    let mychartTwo = echarts.init(document.getElementById('lineRef'+chartList[1]))
 
-[//]: # (    let mychartTwo = echarts.init&#40;document.getElementById&#40;'lineRef'+chartList[1]&#41;&#41;)
+    mychartTwo.setOption(arr2.value)
 
-[//]: # (    mychartTwo.setOption&#40;arr2.value&#41;)
+  },1000)
 
-[//]: # (  },1000&#41;)
+}
 
-[//]: # (})
+function lineChartThree() {
 
-[//]: # (function lineChartThree&#40;&#41; {)
+  console.log('3333333333')
 
-[//]: # (  console.log&#40;'3333333333'&#41;)
+  setTimeout(function () {
 
-[//]: # (  setTimeout&#40;function &#40;&#41; {)
+    let mychartThree = echarts.init(document.getElementById('lineRef'+chartList[2]))
 
-[//]: # (    let mychartThree = echarts.init&#40;document.getElementById&#40;'lineRef'+chartList[2]&#41;&#41;)
+    mychartThree.setOption(arr3.value)
 
-[//]: # (    mychartThree.setOption&#40;arr3.value&#41;)
+  },1000)
 
-[//]: # (  },1000&#41;)
+}
 
-[//]: # (})
+function lineChartFour() {
 
-[//]: # (function lineChartFour&#40;&#41; {)
+  console.log('4444444444444444444')
 
-[//]: # (  console.log&#40;'4444444444444444444'&#41;)
+  setTimeout(function () {
 
-[//]: # (  setTimeout&#40;function &#40;&#41; {)
+    let mychartFour = echarts.init(document.getElementById('lineRef'+chartList[3]))
 
-[//]: # (    let mychartFour = echarts.init&#40;document.getElementById&#40;'lineRef'+chartList[3]&#41;&#41;)
+    mychartFour.setOption(arr4.value)
 
-[//]: # (    mychartFour.setOption&#40;arr4.value&#41;)
+  },1000)
 
-[//]: # (  },1000&#41;)
+}
 
-[//]: # (})
 
-[//]: # ()
-[//]: # (// 视图)
+// 视图
 
-[//]: # (function handletable&#40;&#41; {)
+function handletable() {
 
-[//]: # (  chartview.value = false)
+  chartview.value = false
 
-[//]: # (  console.log&#40;'1111',chartview.value&#41;)
+  console.log('1111',chartview.value)
 
-[//]: # (  queryParams.value.pageSize = 10)
+  queryParams.value.pageSize = 10
 
-[//]: # (  getTrList&#40;&#41;)
+  getTrList()
 
-[//]: # (})
+}
 
-[//]: # ()
-[//]: # ()
-[//]: # ()
-[//]: # (/** 获取测站列表 */)
 
-[//]: # (function getStationListuser&#40;&#41; {)
 
-[//]: # (  let params = {};)
 
-[//]: # (  params.companyId = permissionStore.perSpaceId;)
+/** 获取测站列表 */
 
-[//]: # (  getStationList&#40;params&#41;.then&#40;res => {)
+function getStationListuser() {
 
-[//]: # (    if &#40;res.code == 200&#41; {)
+  let params = {};
 
-[//]: # (      searchList.value[4].options = [];)
+  params.companyId = permissionStore.perSpaceId;
 
-[//]: # (      console.log&#40;'测站列表',res.rows&#41;)
+  getStationList(params).then(res => {
 
-[//]: # (      res.rows.forEach&#40;&#40;item&#41; => {)
+    if (res.code == 200) {
 
-[//]: # (        searchList.value[4].options.push&#40;{)
+      searchList.value[4].options = [];
 
-[//]: # (          value: item.sign,)
+      console.log('测站列表',res.rows)
 
-[//]: # (          label: item.name,)
+      res.rows.forEach((item) => {
 
-[//]: # (        }&#41;;)
+        searchList.value[4].options.push({
 
-[//]: # (      }&#41;;)
+          value: item.sign,
 
-[//]: # (    })
+          label: item.name,
 
-[//]: # (  }&#41;;)
+        });
 
-[//]: # (})
+      });
 
-[//]: # ()
-[//]: # (/** 搜索按钮操作 */)
+    }
 
-[//]: # (function handleQuery&#40;action&#41; {)
+  });
 
-[//]: # (  queryParams.value = {)
+}
 
-[//]: # (    code: undefined,)
 
-[//]: # (    date: undefined,)
+/** 搜索按钮操作 */
 
-[//]: # (    startTime: undefined,)
+function handleQuery(action) {
 
-[//]: # (    endTime: undefined,)
+  queryParams.value = {
 
-[//]: # (  })
+    code: undefined,
 
-[//]: # (  formatSearchParams&#40;action&#41;;)
+    date: undefined,
 
-[//]: # (  queryParams.value.pageNum = 1;)
+    startTime: undefined,
 
-[//]: # (  queryParams.value.pageSize = 10;)
+    endTime: undefined,
 
-[//]: # (  getTrList&#40;&#41;;)
+  }
 
-[//]: # (})
+  formatSearchParams(action);
 
-[//]: # ()
-[//]: # (function handleDownload&#40;&#41; {)
+  queryParams.value.pageNum = 1;
 
-[//]: # (  console.log&#40;queryParams.value&#41;)
+  queryParams.value.pageSize = 10;
 
-[//]: # (  let param = {)
+  getTrList();
 
-[//]: # (    satelliteId: permissionStore.spaceId,)
+}
 
-[//]: # (    code: queryParams.value.code,)
 
-[//]: # (    startTime: queryParams.value.date ? queryParams.value.date[0] : undefined,)
+function handleDownload() {
 
-[//]: # (    endTime: queryParams.value.date ? queryParams.value.date[1] : undefined)
+  console.log(queryParams.value)
 
-[//]: # (  })
+  let param = {
 
-[//]: # (  if &#40;param.startTime && param.endTime && param.code&#41; {)
+    satelliteId: permissionStore.spaceId,
 
-[//]: # (    console.log&#40;param&#41;)
+    code: queryParams.value.code,
 
-[//]: # (    proxy.download&#40;"datastorage/tmResults/export", {)
+    startTime: queryParams.value.date ? queryParams.value.date[0] : undefined,
 
-[//]: # (      ...param,)
+    endTime: queryParams.value.date ? queryParams.value.date[1] : undefined
 
-[//]: # (    }, `${param.code+ '遥测结果' + new Date&#40;&#41;.getTime&#40;&#41;}.xlsx`&#41;;)
+  }
 
-[//]: # (  } else {)
+  if (param.startTime && param.endTime && param.code) {
 
-[//]: # (    proxy.$modal.msgError&#40;"请选择时间与参数代号"&#41;;)
+    console.log(param)
 
-[//]: # (  })
+    proxy.download("datastorage/tmResults/export", {
 
-[//]: # (})
+      ...param,
 
-[//]: # ()
-[//]: # (//进制切换)
+    }, `${param.code+ '遥测结果' + new Date().getTime()}.xlsx`);
 
-[//]: # (function selectVal&#40;val&#41; {)
+  } else {
 
-[//]: # (  tableData.value.forEach&#40;&#40;element&#41; => {)
+    proxy.$modal.msgError("请选择时间与参数代号");
 
-[//]: # (    element.aryValue = transitionVal&#40;element.binValue, val&#41;;)
+  }
 
-[//]: # (  }&#41;;)
+}
 
-[//]: # (})
 
-[//]: # ()
-[//]: # (function transitionVal&#40;binValue, ary&#41; {)
+//进制切换
 
-[//]: # (  let newVal = null;)
+function selectVal(val) {
 
-[//]: # (  if &#40;!isNaN&#40;binValue&#41;&#41; {)
+  tableData.value.forEach((element) => {
 
-[//]: # (    if &#40;ary == "10"&#41; {)
+    element.aryValue = transitionVal(element.binValue, val);
 
-[//]: # (      newVal = Number.parseInt&#40;binValue, 2&#41;;)
+  });
 
-[//]: # (    } else if &#40;ary == "16"&#41; {)
+}
 
-[//]: # (      newVal = Number.parseInt&#40;binValue, 2&#41;.toString&#40;16&#41;;)
 
-[//]: # (    } else if &#40;ary == "2"&#41; {)
+function transitionVal(binValue, ary) {
 
-[//]: # (      newVal = binValue;)
+  let newVal = null;
 
-[//]: # (    })
+  if (!isNaN(binValue)) {
 
-[//]: # (  })
+    if (ary == "10") {
 
-[//]: # (  return newVal;)
+      newVal = Number.parseInt(binValue, 2);
 
-[//]: # (})
+    } else if (ary == "16") {
 
-[//]: # ()
-[//]: # (/** 格式化搜索框子组件传递过来的参数 */)
+      newVal = Number.parseInt(binValue, 2).toString(16);
 
-[//]: # (function formatSearchParams&#40;action&#41; {)
+    } else if (ary == "2") {
 
-[//]: # (  if &#40;action && action.length > 0&#41; {)
+      newVal = binValue;
 
-[//]: # (    action.forEach&#40;&#40;item&#41; => {)
+    }
 
-[//]: # (      let order = item.indexOf&#40;":"&#41;;)
+  }
 
-[//]: # (      let name = item.substring&#40;0, order&#41;;)
+  return newVal;
 
-[//]: # (      let value = item.substring&#40;order + 1, item.length&#41;;)
+}
 
-[//]: # (      switch &#40;name&#41; {)
 
-[//]: # (        case "参数代号":)
+/** 格式化搜索框子组件传递过来的参数 */
 
-[//]: # (          queryParams.value.code = searchList.value[0].options.filter&#40;)
+function formatSearchParams(action) {
 
-[//]: # (              &#40;item&#41; => item.label == value)
+  if (action && action.length > 0) {
 
-[//]: # (          &#41;[0].value;)
+    action.forEach((item) => {
 
-[//]: # (          break;)
+      let order = item.indexOf(":");
 
-[//]: # (        case "参数名称":)
+      let name = item.substring(0, order);
 
-[//]: # (          queryParams.value.name = value;)
+      let value = item.substring(order + 1, item.length);
 
-[//]: # (          break;)
+      switch (name) {
 
-[//]: # (        case "起止时间":)
+        case "参数代号":
 
-[//]: # (          queryParams.value.date = [)
+          queryParams.value.code = searchList.value[0].options.filter(
 
-[//]: # (            value.substring&#40;0, 19&#41;,)
+              (item) => item.label == value
 
-[//]: # (            value.substring&#40;20&#41;,)
+          )[0].value;
 
-[//]: # (          ];)
+          break;
 
-[//]: # (          break;)
+        case "参数名称":
 
-[//]: # (        case "遥测状态":)
+          queryParams.value.name = value;
 
-[//]: # (          queryParams.value.delay = value;)
+          break;
 
-[//]: # (          break;)
+        case "起止时间":
 
-[//]: # (        case "设备":)
+          queryParams.value.date = [
 
-[//]: # (          queryParams.value.stationSymbol = value;)
+            value.substring(0, 19),
 
-[//]: # (          break;)
+            value.substring(20),
 
-[//]: # (        case "告警级别":)
+          ];
 
-[//]: # (          console.log&#40;value&#41;)
+          break;
 
-[//]: # (          queryParams.value.alarmLevel = value;)
+        case "遥测状态":
 
-[//]: # (          break;)
+          queryParams.value.delay = value;
 
-[//]: # (        default:)
+          break;
 
-[//]: # (          break;)
+        case "设备":
 
-[//]: # (      })
+          queryParams.value.stationSymbol = value;
 
-[//]: # (    }&#41;;)
+          break;
 
-[//]: # (  } else {)
+        case "告警级别":
 
-[//]: # (    queryParams.value = {};)
+          console.log(value)
 
-[//]: # (    queryParams.value.pageNum = 1;)
+          queryParams.value.alarmLevel = value;
 
-[//]: # (    queryParams.value.pageSize = 10;)
+          break;
 
-[//]: # (  })
+        default:
 
-[//]: # (})
+          break;
 
-[//]: # ()
-[//]: # (/** 重置按钮操作 */)
+      }
 
-[//]: # (function resetQuery&#40;&#41; {)
+    });
 
-[//]: # (  proxy.resetForm&#40;"queryRef"&#41;;)
+  } else {
 
-[//]: # (  handleQuery&#40;&#41;;)
+    queryParams.value = {};
 
-[//]: # (  proxy.$refs["tableselectRef"].clearTags&#40;&#41;;)
+    queryParams.value.pageNum = 1;
 
-[//]: # (})
+    queryParams.value.pageSize = 10;
 
-[//]: # ()
-[//]: # (/** 获取遥测参数列表 */)
+  }
 
-[//]: # (async function getParamList&#40;&#41; {)
+}
 
-[//]: # (  let param = {satelliteId: permissionStore.spaceId};)
 
-[//]: # (  let res = await API.listParam&#40;qs.stringify&#40;param, {arrayFormat: "repeat"}&#41;&#41;;)
+/** 重置按钮操作 */
 
-[//]: # (  let paramList = [];)
+function resetQuery() {
 
-[//]: # (  if &#40;res?.code == 200&#41; {)
+  proxy.resetForm("queryRef");
 
-[//]: # (    if &#40;res.rows.length != 0&#41; {)
+  handleQuery();
 
-[//]: # (      res.rows.forEach&#40;&#40;element&#41; => {)
+  proxy.$refs["tableselectRef"].clearTags();
 
-[//]: # (        paramList.push&#40;{)
+}
 
-[//]: # (          label: element.code,)
 
-[//]: # (          value: element.code,)
+/** 获取遥测参数列表 */
 
-[//]: # (          name: element.name)
+async function getParamList() {
 
-[//]: # (        }&#41;;)
+  let param = {satelliteId: permissionStore.spaceId};
 
-[//]: # (      }&#41;;)
+  let res = await API.listParam(qs.stringify(param, {arrayFormat: "repeat"}));
 
-[//]: # (      searchList.value[0].options = paramList;)
+  let paramList = [];
 
-[//]: # (      console.log&#40;'res.rows',paramList&#41;)
+  if (res?.code == 200) {
 
-[//]: # (      tabNum.value++;)
+    if (res.rows.length != 0) {
 
-[//]: # (    })
+      res.rows.forEach((element) => {
 
-[//]: # (  })
+        paramList.push({
 
-[//]: # (})
+          label: element.code,
 
-[//]: # ()
-[//]: # (const line1 = ref&#40;0&#41;)
+          value: element.code,
 
-[//]: # (const line2 = ref&#40;0&#41;)
+          name: element.name
 
-[//]: # (const line3 = ref&#40;0&#41;)
+        });
 
-[//]: # (const line4 = ref&#40;0&#41;)
+      });
 
-[//]: # (// 查询遥测结果列表)
+      searchList.value[0].options = paramList;
 
-[//]: # (async function getTrList&#40;&#41; {)
+      console.log('res.rows',paramList)
 
-[//]: # (  let param = {)
+      tabNum.value++;
 
-[//]: # (        satelliteId: permissionStore.spaceId,)
+    }
 
-[//]: # (        code: queryParams.value.code,)
+  }
 
-[//]: # (        startTime: queryParams.value.date ? queryParams.value.date[0] : undefined,)
+}
 
-[//]: # (        endTime: queryParams.value.date ? queryParams.value.date[1] : undefined,)
 
-[//]: # (        pageNum: queryParams.value.pageNum,)
+const line1 = ref(0)
 
-[//]: # (        pageSize: queryParams.value.pageSize,)
+const line2 = ref(0)
 
-[//]: # (        name: queryParams.value.name,)
+const line3 = ref(0)
 
-[//]: # (        delay: queryParams.value.delay,)
+const line4 = ref(0)
 
-[//]: # (        stationSymbol: queryParams.value.stationSymbol,)
+// 查询遥测结果列表
 
-[//]: # (        alarmLevel: queryParams.value.alarmLevel)
+async function getTrList() {
 
-[//]: # (      },)
+  let param = {
 
-[//]: # (      res = null,)
+        satelliteId: permissionStore.spaceId,
 
-[//]: # (      resData = null;)
+        code: queryParams.value.code,
 
-[//]: # (  loading.value = true;)
+        startTime: queryParams.value.date ? queryParams.value.date[0] : undefined,
 
-[//]: # (  const arr = Object.values&#40;queryParams.value&#41;.filter&#40;Boolean&#41;)
+        endTime: queryParams.value.date ? queryParams.value.date[1] : undefined,
 
-[//]: # (  console.log&#40;'arr',arr&#41;)
+        pageNum: queryParams.value.pageNum,
 
-[//]: # (  if&#40;arr.length > 3 &#41;{)
+        pageSize: queryParams.value.pageSize,
 
-[//]: # (    if&#40;chartview.value&#41;{)
+        name: queryParams.value.name,
 
-[//]: # (      try {)
+        delay: queryParams.value.delay,
 
-[//]: # (        res = await API.tmResultsList&#40;)
+        stationSymbol: queryParams.value.stationSymbol,
 
-[//]: # (            qs.stringify&#40;param, {arrayFormat: "repeat"}&#41;)
+        alarmLevel: queryParams.value.alarmLevel
 
-[//]: # (        &#41;;)
+      },
 
-[//]: # (      } catch &#40;error&#41; {)
+      res = null,
 
-[//]: # (        loading.value = false;)
+      resData = null;
 
-[//]: # (      })
+  loading.value = true;
 
-[//]: # (      loading.value = false;)
+  const arr = Object.values(queryParams.value).filter(Boolean)
 
-[//]: # (      res.rows.forEach&#40;&#40;element&#41; => {)
+  console.log('arr',arr)
 
-[//]: # (        element.aryValue = element.binValue;)
+  if(arr.length > 3 ){
 
-[//]: # (      }&#41;;)
+    if(chartview.value){
 
-[//]: # (      resData = res.rows;)
+      try {
 
-[//]: # (      total.value = res.total;)
+        res = await API.tmResultsList(
 
-[//]: # (      tableData.value = resData;)
+            qs.stringify(param, {arrayFormat: "repeat"})
 
-[//]: # (      let arra = [],arrb = [])
+        );
 
-[//]: # (      if &#40;tableData.value.length>0&#41; {)
+      } catch (error) {
 
-[//]: # (        console.log&#40;'line',lineList.value[chartnumber.value-1]&#41;)
+        loading.value = false;
 
-[//]: # (        console.log&#40;'tableData.value',tableData.value&#41;)
+      }
 
-[//]: # (        tableData.value.map&#40;item =>{)
+      loading.value = false;
 
-[//]: # (          arra.push&#40;item.satelliteTime&#41;)
+      res.rows.forEach((element) => {
 
-[//]: # (          arrb.push&#40;item.value&#41;)
+        element.aryValue = element.binValue;
 
-[//]: # (        }&#41;)
+      });
 
-[//]: # (        console.log&#40;arra,arrb&#41;)
+      resData = res.rows;
 
-[//]: # (        if&#40;chartnumber.value == 1&#41;{)
+      total.value = res.total;
 
-[//]: # (          console.log&#40;&#40;'开始数据'&#41;&#41;)
+      tableData.value = resData;
 
-[//]: # (          lineList.value[chartnumber.value-1] = lineList.value[chartnumber.value-1] + 1)
+      let arra = [],arrb = []
 
-[//]: # (          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1]={)
+      if (tableData.value.length>0) {
 
-[//]: # (            name: '',)
+        console.log('line',lineList.value[chartnumber.value-1])
 
-[//]: # (            type: 'line',)
+        console.log('tableData.value',tableData.value)
 
-[//]: # (            data: [])
+        tableData.value.map(item =>{
 
-[//]: # (          })
+          arra.push(item.satelliteTime)
 
-[//]: # (          for &#40;let i=0;i<arra.length;i++&#41;{)
+          arrb.push(item.value)
 
-[//]: # (            let arrdata=[arra[i],arrb[i]])
+        })
 
-[//]: # (            chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].data.push&#40;arrdata&#41;)
+        console.log(arra,arrb)
 
-[//]: # (            console.log&#40;'bianli',chartList&#41;)
+        if(chartnumber.value == 1){
 
-[//]: # (          })
+          console.log(('开始数据'))
 
-[//]: # (          console.log&#40;'chartList',chartList&#41;)
+          lineList.value[chartnumber.value-1] = lineList.value[chartnumber.value-1] + 1
 
-[//]: # (          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].name = tableData.value[0].name)
+          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1]={
 
-[//]: # (          chartList[chartnumber.value-1].arr.legend.data.push&#40;tableData.value[0].name&#41;)
+            name: '',
 
-[//]: # (          lineChartOne&#40;&#41;)
+            type: 'line',
 
-[//]: # (        }else{)
+            data: []
 
-[//]: # (          lineList.value[chartnumber.value-1] = lineList.value[chartnumber.value-1] + 1)
+          }
 
-[//]: # (          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1]={)
+          for (let i=0;i<arra.length;i++){
 
-[//]: # (            name: '',)
+            let arrdata=[arra[i],arrb[i]]
 
-[//]: # (            type: 'line',)
+            chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].data.push(arrdata)
 
-[//]: # (            data: [])
+            console.log('bianli',chartList)
 
-[//]: # (          })
+          }
 
-[//]: # (          for &#40;let i=0;i<arra.length;i++&#41;{)
+          console.log('chartList',chartList)
 
-[//]: # (            let arrdata=[arra[i],arrb[i]])
+          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].name = tableData.value[0].name
 
-[//]: # (            chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].data.push&#40;arrdata&#41;)
+          chartList[chartnumber.value-1].arr.legend.data.push(tableData.value[0].name)
 
-[//]: # (          })
+          lineChartOne()
 
-[//]: # (          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].name = tableData.value[0].name)
+        }else{
 
-[//]: # (          chartList[chartnumber.value-1].arr.legend.data.push&#40;tableData.value[0].name&#41;)
+          lineList.value[chartnumber.value-1] = lineList.value[chartnumber.value-1] + 1
 
-[//]: # (          lineChartOne&#40;&#41;)
+          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1]={
 
-[//]: # (        })
+            name: '',
 
-[//]: # (      })
+            type: 'line',
 
-[//]: # (    }else {)
+            data: []
 
-[//]: # (      try {)
+          }
 
-[//]: # (        res = await API.tmResultsList&#40;)
+          for (let i=0;i<arra.length;i++){
 
-[//]: # (            qs.stringify&#40;param, {arrayFormat: "repeat"}&#41;)
+            let arrdata=[arra[i],arrb[i]]
 
-[//]: # (        &#41;;)
+            chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].data.push(arrdata)
 
-[//]: # (      } catch &#40;error&#41; {)
+          }
 
-[//]: # (        loading.value = false;)
+          chartList[chartnumber.value-1].arr.series[lineList.value[chartnumber.value-1]-1].name = tableData.value[0].name
 
-[//]: # (      })
+          chartList[chartnumber.value-1].arr.legend.data.push(tableData.value[0].name)
 
-[//]: # (      loading.value = false;)
+          lineChartOne()
 
-[//]: # (      res.rows.forEach&#40;&#40;element&#41; => {)
+        }
 
-[//]: # (        element.aryValue = element.binValue;)
+      }
 
-[//]: # (      }&#41;;)
+    }else {
 
-[//]: # (      resData = res.rows;)
+      try {
 
-[//]: # (      total.value = res.total;)
+        res = await API.tmResultsList(
 
-[//]: # (      tableData.value = resData;)
+            qs.stringify(param, {arrayFormat: "repeat"})
 
-[//]: # (      console.log&#40;'没画图的表格数据',tableData.value&#41;)
+        );
 
-[//]: # (    })
+      } catch (error) {
 
-[//]: # (  }else {)
+        loading.value = false;
 
-[//]: # (    proxy.$modal.msgWarning&#40;"请选择两条或以上查询条件"&#41;)
+      }
 
-[//]: # (    loading.value = false;)
+      loading.value = false;
 
-[//]: # (  })
+      res.rows.forEach((element) => {
 
-[//]: # (})
+        element.aryValue = element.binValue;
 
-[//]: # ()
-[//]: # (// 分页获取表结构)
+      });
 
-[//]: # (function currentChange&#40;val&#41; {)
+      resData = res.rows;
 
-[//]: # (  queryParams.value.pageNum = val.pageNum;)
+      total.value = res.total;
 
-[//]: # (  queryParams.value.pageSize = val.pageSize;)
+      tableData.value = resData;
 
-[//]: # (  getTrList&#40;&#41;;)
+      console.log('没画图的表格数据',tableData.value)
 
-[//]: # (})
+    }
 
-[//]: # ()
-[//]: # (function initSortable&#40;&#41; {)
+  }else {
 
-[//]: # (  let sortable;)
+    proxy.$modal.msgWarning("请选择两条或以上查询条件")
 
-[//]: # (  // 拖动配置)
+    loading.value = false;
 
-[//]: # (  const tbody = document.querySelector&#40;".vxe-table--body tbody"&#41;;)
+  }
 
-[//]: # (  const ops = {)
+}
 
-[//]: # (    animation: 200,)
 
-[//]: # (    group: "id",)
+// 分页获取表结构
 
-[//]: # (    handle: ".col--seq", // handle's class)
+function currentChange(val) {
 
-[//]: # (    // 拖动结束)
+  queryParams.value.pageNum = val.pageNum;
 
-[//]: # (    onEnd: function &#40;evt&#41; {)
+  queryParams.value.pageSize = val.pageSize;
 
-[//]: # (      // 获取拖动后的排序，arr数组里的值是 data-id 的顺序)
+  getTrList();
 
-[//]: # (      let arr = sortable.toArray&#40;&#41;;)
+}
 
-[//]: # (      console.log&#40;{evt, arr}&#41;;)
 
-[//]: # (      const currRow = tableData.value.splice&#40;evt.oldIndex, 1&#41;[0];)
+function initSortable() {
 
-[//]: # (      console.log&#40;currRow&#41;;)
+  let sortable;
 
-[//]: # (      tableData.value.splice&#40;evt.newIndex, 0, currRow&#41;;)
+  // 拖动配置
 
-[//]: # (      console.log&#40;Array.from&#40;tableData.value&#41;&#41;;)
+  const tbody = document.querySelector(".vxe-table--body tbody");
 
-[//]: # (      //   拖动后获取newIdex)
+  const ops = {
 
-[//]: # (    },)
+    animation: 200,
 
-[//]: # (  };)
+    group: "id",
 
-[//]: # (  //初始化)
+    handle: ".col--seq", // handle's class
 
-[//]: # (  sortable = Sortable.create&#40;tbody, ops&#41;;)
+    // 拖动结束
 
-[//]: # (})
+    onEnd: function (evt) {
 
-[//]: # (</script>)
+      // 获取拖动后的排序，arr数组里的值是 data-id 的顺序
 
-[//]: # (<style lang="scss" scoped>)
+      let arr = sortable.toArray();
 
-[//]: # (.tc-container {)
+      console.log({evt, arr});
 
-[//]: # (  width: 100%;)
+      const currRow = tableData.value.splice(evt.oldIndex, 1)[0];
 
-[//]: # (  height: 100%;)
+      console.log(currRow);
 
-[//]: # ()
-[//]: # (  .tc-container-table {)
+      tableData.value.splice(evt.newIndex, 0, currRow);
 
-[//]: # (    height: calc&#40;100% - 52px&#41;;)
+      console.log(Array.from(tableData.value));
 
-[//]: # (    width: 100%;)
+      //   拖动后获取newIdex
 
-[//]: # ()
-[//]: # (    .content-header-form {)
+    },
 
-[//]: # (      width: 90%;)
+  };
 
-[//]: # (      background: transparent;)
+  //初始化
 
-[//]: # (    })
+  sortable = Sortable.create(tbody, ops);
 
-[//]: # ()
-[//]: # (    .slotBox {)
+}
 
-[//]: # (      display: inline-block;)
+</script>
 
-[//]: # (    })
+<style lang="scss" scoped>
 
-[//]: # (  })
+.tc-container {
 
-[//]: # (  .chart-container{)
+  width: 100%;
 
-[//]: # (    display: flex;)
+  height: 100%;
 
-[//]: # (    flex-wrap: wrap;)
 
-[//]: # (    .selected-one{)
+  .tc-container-table {
 
-[//]: # (      width: 50%;)
+    height: calc(100% - 52px);
 
-[//]: # (      height: 50px;)
+    width: 100%;
 
-[//]: # (      display: flex;)
 
-[//]: # (      justify-content: center;)
+    .content-header-form {
 
-[//]: # ()
-[//]: # (    })
+      width: 90%;
 
-[//]: # (  })
+      background: transparent;
 
-[//]: # (})
+    }
 
-[//]: # (</style>)
 
-[//]: # ()
-[//]: # (```)
+    .slotBox {
+
+      display: inline-block;
+
+    }
+
+  }
+
+  .chart-container{
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    .selected-one{
+
+      width: 50%;
+
+      height: 50px;
+
+      display: flex;
+
+      justify-content: center;
+
+
+    }
+
+  }
+
+}
+
+</style>
+
+
+```

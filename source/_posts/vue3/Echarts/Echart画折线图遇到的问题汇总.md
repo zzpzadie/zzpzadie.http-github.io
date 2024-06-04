@@ -139,3 +139,25 @@ const mychartlList = shallowRef([])
 ```bash
 :ref="(e) => setRefs(e)"
 ```
+# EChart 在一个图里有多个Y轴，且Y轴数量和单位、类型很多，无法提前设定，但是数值轴和类目轴无法同时显示，若同时显示无法排序大小
+## 一开始没看到居然无法排序，解决：识别数据，当数据为数值，type设置value，其他类目设置category
+```bash
+if (!isNaN(arra[0])) {
+                chartList[chartindex.value].arr.yAxis[j].type = 'value'
+              } else {
+                chartList[chartindex.value].arr.yAxis[j].type = 'category'
+              }
+```
+## 现在可以排序，但是数值轴和类目轴无法同时显示，同时显示要么排序出错，要么只能显示一个轴
+：给对应series设置index
+```bash
+chartList[chartindex.value].arr.series[j].yAxisIndex = j
+```
+# EChart 实时多个同时更新数据多时容易卡
+：使用throttle函数，限制画图次数，throttle默认模式为Leading,因为实际使用中，多数的Throttle场景是在指定时间间隔的开始处调用，比如防止按钮重复点击时，一般会响应第一次点击，而忽略之后的点击。
+```bash
+throttle(
+      reRenderChart,
+      1000
+    );
+```

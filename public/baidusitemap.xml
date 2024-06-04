@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://zzpzadie.github.io/2024/05/10/vue3/Echarts/Echart%E7%94%BB%E6%8A%98%E7%BA%BF%E5%9B%BE%E4%B8%80%E5%BC%A0%E5%9B%BE%E5%8F%AF%E6%B7%BB%E5%8A%A0%E4%BB%BB%E6%84%8F%E6%9D%A1%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%8F%AF%E6%B7%BB%E5%8A%A0%E8%A7%86%E5%9B%BE/</loc>
-    <lastmod>2024-05-27</lastmod>
+    <loc>https://zzpzadie.github.io/2024/04/25/vue3/Echarts/Echart%E7%94%BB%E6%8A%98%E7%BA%BF%E5%9B%BE%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/</loc>
+    <lastmod>2024-06-04</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/05/30/react/%E9%85%8D%E7%BD%AE/redux/redux%E5%AE%89%E8%A3%85/</loc>
+    <lastmod>2024-05-31</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/1.react%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E9%85%8D%E7%BD%AE/</loc>
+    <lastmod>2024-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/4.%E8%B7%AF%E5%BE%84%E5%88%AB%E5%90%8D%E7%9A%84%E9%85%8D%E7%BD%AE/</loc>
+    <lastmod>2024-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/3.scss%E5%AE%89%E8%A3%85%E5%92%8C%E5%88%9D%E6%AD%A5%E4%BD%BF%E7%94%A8/</loc>
+    <lastmod>2024-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/2.%E7%BB%84%E4%BB%B6ant%E7%9A%84%E4%BD%BF%E7%94%A8/</loc>
+    <lastmod>2024-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://zzpzadie.github.io/2024/04/17/vue3/%E6%97%B6%E9%97%B4/</loc>
+    <lastmod>2024-05-29</lastmod>
   </url>
   <url>
     <loc>https://zzpzadie.github.io/2024/04/17/react/%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/%E6%8A%8A%E6%9C%AC%E5%9C%B0%E9%A1%B9%E7%9B%AE%E4%B8%8EGitHub%E7%9B%B8%E8%BF%9E%E5%B0%86%E6%BA%90%E7%A0%81%E6%8E%A8%E5%88%B0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
@@ -25,10 +49,6 @@
     <lastmod>2024-05-24</lastmod>
   </url>
   <url>
-    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/%E7%BB%84%E4%BB%B6ant%E7%9A%84%E4%BD%BF%E7%94%A8/</loc>
-    <lastmod>2024-05-23</lastmod>
-  </url>
-  <url>
     <loc>https://zzpzadie.github.io/2024/05/03/vue3/Echarts/Echarts-tooltips/</loc>
     <lastmod>2024-05-23</lastmod>
   </url>
@@ -45,14 +65,6 @@
     <lastmod>2024-05-15</lastmod>
   </url>
   <url>
-    <loc>https://zzpzadie.github.io/2024/05/14/react/%E9%85%8D%E7%BD%AE/%E9%85%8D%E7%BD%AE/</loc>
-    <lastmod>2024-05-14</lastmod>
-  </url>
-  <url>
-    <loc>https://zzpzadie.github.io/2024/04/25/vue3/Echarts/Echart%E7%94%BB%E6%8A%98%E7%BA%BF%E5%9B%BE%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/</loc>
-    <lastmod>2024-05-13</lastmod>
-  </url>
-  <url>
     <loc>https://zzpzadie.github.io/2024/05/08/vue3/Vue%20%E4%B8%8D%E8%83%BD%E6%A3%80%E6%B5%8B%E5%8F%98%E5%8A%A8%E7%9A%84%E6%95%B0%E7%BB%84/</loc>
     <lastmod>2024-05-08</lastmod>
   </url>
@@ -67,10 +79,6 @@
   <url>
     <loc>https://zzpzadie.github.io/2024/04/26/vue3/%E5%80%BC%E7%9A%84%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/</loc>
     <lastmod>2024-04-26</lastmod>
-  </url>
-  <url>
-    <loc>https://zzpzadie.github.io/2024/04/17/vue3/%E6%97%B6%E9%97%B4/</loc>
-    <lastmod>2024-04-17</lastmod>
   </url>
   <url>
     <loc>https://zzpzadie.github.io/2024/04/17/vue3/%E4%B8%8B%E8%BD%BD/</loc>
